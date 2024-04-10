@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de dés</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f7f7f7;
+            padding: 20px;
+        }
+
+        #gameContainer {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .player {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #dice {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="gameContainer">
+        <h1 class="mb-4">Jeu de dés</h1>
+
+        <div class="player" id="player1">
+            <h2>Joueur 1</h2>
+            <p>Score Tour : <span id="roundScore1">0</span></p>
+            <p>Score Global : <span id="globalScore1">0</span></p>
+            <button class="btn btn-primary mr-2" onclick="rollDice(1)">Lancer les dés</button>
+            <button class="btn btn-success" onclick="hold(1)">Hold</button>
+        </div>
+
+        <div id="dice">🎲</div>
+
+        <div class="player" id="player2">
+            <h2>Joueur 2</h2>
+            <p>Score Tour : <span id="roundScore2">0</span></p>
+            <p>Score Global : <span id="globalScore2">0</span></p>
+            <button class="btn btn-primary mr-2" onclick="rollDice(2)">Lancer les dés</button>
+            <button class="btn btn-success" onclick="hold(2)">Hold</button>
+        </div>
+
+        <div id="controlPanel" class="mt-4">
+            <button class="btn btn-info" onclick="newGame()">Nouvelle partie</button>
+        </div>
+    </div>
+
+    <script>
+        let scores = [0, 0];
+        let roundScore = 0;
+        let activePlayer = 0;
+
+        function rollDice(player) {
+            if (player !== activePlayer + 1) return;
+
+            let dice = Math.floor(Math.random() * 6) + 1;
+
+            document.getElementById('dice').textContent = dice;
+
+            if (dice !== 1) {
+                roundScore += dice;
+                document.getElementById(`roundScore${player}`).textContent = roundScore;
+            } else {
+                roundScore = 0;
+                document.getElementById(`roundScore${player}`).textContent = roundScore;
+                switchPlayer();
+            }
+        }
+
+        function hold(player) {
+            if (player !== activePlayer + 1) return;
+
+            scores[activePlayer] += roundScore;
+            document.getElementById(`globalScore${player}`).textContent = scores[activePlayer];
+
+            if (scores[activePlayer] >= 100) {
+                document.getElementById(`roundScore${player}`).textContent = 'Winner!';
+                disableButtons();
+            } else {
+                roundScore = 0;
+                document.getElementById(`roundScore${player}`).textContent = roundScore;
+                switchPlayer();
+            }
+        }
+
+        function switchPlayer() {
+            document.getElementById(`roundScore${activePlayer + 1}`).textContent = 0;
+            activePlayer = activePlayer === 0 ? 1 : 0;
+        }
+
+        function disableButtons() {
+            document.querySelectorAll('button').forEach(btn => {
+                btn.disabled = true;
+            });
+        }
+
+        function newGame() {
+            scores = [0, 0];
+            roundScore = 0;
+            activePlayer = 0;
+
+            document.getElementById('roundScore1').textContent = 0;
+            document.getElementById('globalScore1').textContent = 0;
+            document.getElementById('roundScore2').textContent = 0;
+            document.getElementById('globalScore2').textContent = 0;
+            document.getElementById('dice').textContent = '🎲';
+
+            enableButtons();
+        }
+
+        function enableButtons() {
+            document.querySelectorAll('button').forEach(btn => {
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+
+</html>
